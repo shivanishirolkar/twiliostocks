@@ -19,6 +19,5 @@ This is a project I am using to play around with the Twilio API for WhatsApp. I 
 7. Click save and send "hello" to the Twilio bot on WhatsApp.
 
 ## Things in progress:
-1. Cryptocurrency functionality
-2. Improved language processing
-3. Deployment on a hosting service
+1. Improved language processing
+2. Deployment on a hosting service
