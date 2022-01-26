@@ -15,7 +15,7 @@ This is a project I am using to play around with the Twilio API for WhatsApp. I 
    ```$ python manage.py migrate```<br />
    ```$ python manage.py runserver```
 5. Open another terminal and type in the command ```ngrok http 8000```. It will output a summary of the session status. Copy the URL next to Forwarding; it should look like this: ```https://d9ee-203-13-181-11.ngrok.io```.
-6. Append ```/message``` to the end of this URL and paste it into the webhook for "WHEN A MESSAGE COMES IN" under Sandbox Configuration. Set the request to HTTP POST.
+6. Append ```/stocks``` to the end of this URL and paste it into the webhook for "WHEN A MESSAGE COMES IN" under Sandbox Configuration. Set the request to HTTP POST.
 7. Click save and send "hello" to the Twilio bot on WhatsApp.
 
 ## Things in progress:
