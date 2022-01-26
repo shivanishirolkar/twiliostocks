@@ -2,14 +2,15 @@ from email.quoprimime import quote
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from twilio.twiml.messaging_response import MessagingResponse
-import json
-import finnhub
-import spacy
-import pandas as pd
 from django.conf import settings
 
+import re
+import os
+
+import finnhub
+import pandas as pd
 finnhub_client = finnhub.Client(api_key=settings.STOCKS_API_KEY)
-nlp = spacy.load('en_core_web_sm')
+
 df = pd.read_csv('stocks.csv')
 column_symbol = df['Symbol'].tolist()
 
@@ -24,27 +25,63 @@ def stocks(request):
     """ 
     
     incoming_message = receive_message(request)
-    incoming_message_doc = nlp(incoming_message)
+    incoming_message_word_list = re.compile('\w+').findall(incoming_message)
     valid_response = False
-    final_response = {}
+
     if "hello" in incoming_message:
         valid_response = True
         return send_message(hello())
     
-    if "quote" in [token.text for token in incoming_message_doc]:
-        valid_response = True
-        for token in incoming_message_doc: # evaluate each word in message to look for ticker symbol
-            symbol = token.text.upper() # convert symbol string to uppercase
-            if symbol in column_symbol: # verify is ticker symbol is valid based on whether it exists in database
-                quote_data = finnhub_client.quote(symbol) #obtain data for each valid symbol
-                final_response[symbol] = quote_data # create a new entry in dictionary
-        json_string = json.dumps(final_response, indent = 6) # convert dictionary to json object
-        print(json_string)
-        return send_message(json_string)
+    quote_dict = {}
+    for word in incoming_message_word_list: # evaluate each word in message to look for ticker symbol
+        symbol = word.upper() # convert symbol string to uppercase
+        if symbol in column_symbol: # verify is ticker symbol is valid based on whether it exists in database
+            valid_response = True
+            resp_attr_dict = finnhub_client.quote(symbol) # obtain data for each valid symbol
+            quote_dict[symbol] = resp_attr_dict # create a new entry in dictionary
+        else:
+            valid_response = False
+        if not valid_response:
+            return send_message(invalid())
+    return send_message(format_quote_dict(quote_dict))
 
-    if not valid_response:
-        valid_response = True
-        return send_message(invalid())
+    """
+    extracts data from quote dictionary of quote data dictionaries and
+    stores it in appropriate variables
+
+    :param dict_2D: double dimensional dictionary
+    :return: formatted string
+
+    """ 
+def format_quote_dict(dict_2D):
+    dictionary_string = ""
+    for key, value in dict_2D.items():
+        symbol = key
+        current_price = value.get('c')
+        change = value.get('d')
+        percent_change = value.get('dp')
+        high_price = value.get('h')
+        low_price = value.get('l')
+        open_price = value.get('o')
+        previous_close = value.get('pc')
+
+        dictionary_string += """{symbol}
+        Current price : ${current_price}
+        Change : {change}
+        Percent change : {percent_change}%
+        High price : ${high_price}
+        Low price : ${low_price}
+        Open price : ${open_price}
+        Previous close : ${previous_close}\n""".format(symbol = symbol, 
+                current_price = current_price, 
+                change = change,
+                percent_change = percent_change,
+                high_price = high_price,
+                low_price = low_price,
+                open_price = open_price,
+                previous_close = previous_close)
+
+    return dictionary_string
 
 def send_message(message, media_url = None):
     """
@@ -79,9 +116,8 @@ def hello():
     :return: menu option string
 
     """
-    return "Greetings! \
-            \nEnter *quote <symbols>* to get quote data for stocks.\
-            "
+    return """Greetings!
+Enter *<symbols>* to get quote data for stocks."""
 
 # greetings and menu options
 def invalid():
@@ -91,5 +127,5 @@ def invalid():
     :return: invalid input alert message
 
     """
-    return "Sorry, I don't understand. Please enter *hello* to get started."
+    return "Sorry, I don't understand. Please check your input."
 

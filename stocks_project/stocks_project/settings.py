@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import os
 
+from dotenv import load_dotenv
+STOCKS_API_KEY = os.getenv("STOCKS_API_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,8 +27,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-SECRET_KEY = os.getenv("SECRET_KEY")
-STOCKS_API_KEY = os.getenv("STOCKS_API_KEY")
+#SECRET_KEY = os.getenv("SECRET_KEY")
+#STOCKS_API_KEY = os.getenv("STOCKS_API_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
