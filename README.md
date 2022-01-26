@@ -10,7 +10,8 @@ This is a project I am using to play around with the Twilio API for WhatsApp. I 
 ## How to deploy:
 1. Create a free Twilio account and set up the Sandbox for Whatsapp [here](https://www.twilio.com/console/sms/whatsapp/sandbox).
 2. Open a terminal and clone this repository. Use ```$ pip install -r requirements.txt``` to install the dependencies.
-3. Navigate to the root directory and run the following commands to start the application: <br />
+3. Set your environment variables (Django Secret key, Finnhub Stock API key).
+4. Navigate to the root directory and run the following commands to start the application: <br />
    ```$ python manage.py migrate```<br />
    ```$ python manage.py runserver```
 5. Open another terminal and type in the command ```ngrok http 8000```. It will output a summary of the session status. Copy the URL next to Forwarding; it should look like this: ```https://d9ee-203-13-181-11.ngrok.io```.
