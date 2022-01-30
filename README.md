@@ -1,7 +1,7 @@
 # twiliostocks
 This is a project I am using to play around with the Twilio API for WhatsApp. I created a simple financial chatbot in Python using the Django web framework. It is equipped to provide stock data on receiving ticker symbols as input.
 
-## Prerequisites
+## Prerequisites:
 1. Python 3.6 or newer
 2. A Twilio account
 3. A smartphone with an active WhatsApp account
